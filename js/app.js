@@ -317,6 +317,7 @@ class CRMApp {
         const modal = document.getElementById('contact-modal');
         const form = document.getElementById('contact-form');
         const title = document.getElementById('contact-modal-title');
+        const dateInput = document.getElementById('contact-date');
 
         form.reset();
 
@@ -325,11 +326,21 @@ class CRMApp {
             const contact = db.getContactById(id);
             document.getElementById('contact-customer').value = contact.customerId;
             document.getElementById('contact-type').value = contact.type;
-            document.getElementById('contact-date').value = contact.date;
+            const jalaliDate = jalali.gregorianToJalali(new Date(contact.date));
+            dateInput.value = jalali.formatJalaliDate(jalaliDate, 'YYYY/MM/DD');
+            dateInput.dataset.gregorianDate = contact.date;
             document.getElementById('contact-description').value = contact.description || '';
         } else {
             title.textContent = 'افزودن تماس جدید';
-            document.getElementById('contact-date').valueAsDate = new Date();
+            const today = jalali.getToday();
+            dateInput.value = jalali.formatJalaliDate(today, 'YYYY/MM/DD');
+            const gregorianDate = new Date().toISOString().split('T')[0];
+            dateInput.dataset.gregorianDate = gregorianDate;
+        }
+
+        if (!dateInput.dataset.hasDatePicker) {
+            jalali.createDatePicker(dateInput);
+            dateInput.dataset.hasDatePicker = 'true';
         }
 
         modal.classList.add('active');
@@ -342,7 +353,8 @@ class CRMApp {
     saveContact() {
         const customerId = document.getElementById('contact-customer').value;
         const type = document.getElementById('contact-type').value;
-        const date = document.getElementById('contact-date').value;
+        const dateInput = document.getElementById('contact-date');
+        const date = dateInput.dataset.gregorianDate;
         const description = document.getElementById('contact-description').value.trim();
 
         if (!customerId || !type || !date) {

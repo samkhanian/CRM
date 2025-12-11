@@ -10,6 +10,7 @@ class JalaliCalendar {
         ];
 
         this.farsiNumbers = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+        this.currentPickerDate = new Date();
     }
 
     toFarsiNumber(num) {
@@ -163,6 +164,114 @@ class JalaliCalendar {
 
     getFormattedToday(format = 'YYYY/MM/DD') {
         return this.formatJalaliDate(this.getToday(), format);
+    }
+
+    createDatePicker(inputElement, onDateSelect) {
+        const pickerId = 'jalali-picker-' + Math.random().toString(36).substr(2, 9);
+        const pickerContainer = document.createElement('div');
+        pickerContainer.id = pickerId;
+        pickerContainer.className = 'jalali-date-picker';
+        pickerContainer.style.display = 'none';
+
+        const getInitialDate = () => {
+            if (inputElement.dataset.gregorianDate) {
+                return new Date(inputElement.dataset.gregorianDate);
+            }
+            return new Date();
+        };
+
+        const currentDate = getInitialDate();
+        const jalaliDate = this.gregorianToJalali(currentDate);
+        
+        this.renderPickerUI(pickerContainer, jalaliDate, (selectedDate) => {
+            const gregorianDate = this.jalaliToGregorian(selectedDate.year, selectedDate.month, selectedDate.day);
+            const dateString = gregorianDate.toISOString().split('T')[0];
+            inputElement.dataset.gregorianDate = dateString;
+            const jalaliFormatted = this.gregorianToJalali(gregorianDate);
+            inputElement.value = this.formatJalaliDate(jalaliFormatted, 'YYYY/MM/DD');
+            pickerContainer.style.display = 'none';
+            if (onDateSelect) onDateSelect(dateString);
+        });
+
+        inputElement.parentElement.style.position = 'relative';
+        inputElement.parentElement.appendChild(pickerContainer);
+
+        inputElement.addEventListener('focus', () => {
+            pickerContainer.style.display = 'block';
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#' + pickerId) && e.target !== inputElement) {
+                pickerContainer.style.display = 'none';
+            }
+        });
+    }
+
+    renderPickerUI(container, jalaliDate, onSelect) {
+        const self = this;
+        const html = `
+            <div class="picker-header">
+                <button class="picker-nav-btn" data-action="prev-month">◀</button>
+                <div class="picker-month-year">
+                    <span class="picker-month">${this.farsiMonths[jalaliDate.month - 1]}</span>
+                    <span class="picker-year">${this.toFarsiNumber(jalaliDate.year)}</span>
+                </div>
+                <button class="picker-nav-btn" data-action="next-month">▶</button>
+            </div>
+            <div class="picker-weekdays">
+                ${this.farsiDays.map(day => `<div class="picker-weekday">${day}</div>`).join('')}
+            </div>
+            <div class="picker-days" data-year="${jalaliDate.year}" data-month="${jalaliDate.month}">
+                ${this.generateDays(jalaliDate.year, jalaliDate.month).map((day, i) => {
+                    return day ? `<button class="picker-day" data-day="${day}">${this.toFarsiNumber(day)}</button>` : '<div class="picker-day empty"></div>';
+                }).join('')}
+            </div>
+        `;
+        
+        container.innerHTML = html;
+
+        container.querySelectorAll('[data-action]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const action = btn.dataset.action;
+                const daysDiv = container.querySelector('.picker-days');
+                let year = parseInt(daysDiv.dataset.year);
+                let month = parseInt(daysDiv.dataset.month);
+                
+                if (action === 'prev-month') {
+                    month--;
+                    if (month < 1) { month = 12; year--; }
+                } else if (action === 'next-month') {
+                    month++;
+                    if (month > 12) { month = 1; year++; }
+                }
+                
+                self.renderPickerUI(container, { year, month, day: 1 }, onSelect);
+            });
+        });
+
+        container.querySelectorAll('[data-day]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const day = parseInt(btn.dataset.day);
+                const daysDiv = container.querySelector('.picker-days');
+                const year = parseInt(daysDiv.dataset.year);
+                const month = parseInt(daysDiv.dataset.month);
+                onSelect({ year, month, day });
+            });
+        });
+    }
+
+    generateDays(jalaliYear, jalaliMonth) {
+        const daysInMonth = jalaliMonth <= 6 ? 31 : jalaliMonth <= 11 ? 30 : this.isLeapJalali(jalaliYear) ? 30 : 29;
+        const firstDay = this.jalaliToGregorian(jalaliYear, jalaliMonth, 1);
+        const firstDayOfWeek = firstDay.getDay();
+        
+        const days = new Array(firstDayOfWeek).fill(null);
+        for (let i = 1; i <= daysInMonth; i++) {
+            days.push(i);
+        }
+        return days;
     }
 }
 

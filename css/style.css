@@ -914,3 +914,101 @@ form {
 .status-closed {
     color: var(--danger-color);
 }
+
+.jalali-date-picker {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    padding: 15px;
+    margin-top: 5px;
+    z-index: 10000;
+    width: 280px;
+    direction: rtl;
+}
+
+.picker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.picker-nav-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.picker-nav-btn:hover {
+    background: var(--primary-dark);
+}
+
+.picker-month-year {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.picker-month {
+    font-size: 15px;
+}
+
+.picker-year {
+    font-size: 13px;
+    color: var(--text-light);
+}
+
+.picker-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    margin-bottom: 8px;
+}
+
+.picker-weekday {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-light);
+    padding: 4px 2px;
+}
+
+.picker-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+}
+
+.picker-day {
+    aspect-ratio: 1;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: var(--bg-color);
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+    padding: 0;
+}
+
+.picker-day:hover:not(.empty) {
+    background: var(--primary-color);
+    color: white;
+}
+
+.picker-day.empty {
+    cursor: default;
+    background: transparent;
+}
