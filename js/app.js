@@ -2,11 +2,59 @@ class CRMApp {
     constructor() {
         this.currentEditingId = null;
         this.currentEditingType = null;
+        this.isLoggedIn = false;
         this.init();
     }
 
     init() {
-        this.setupEventListeners();
+        this.checkLogin();
+        this.setupLoginForm();
+        this.setupAppEventListeners();
+    }
+
+    checkLogin() {
+        const sessionToken = sessionStorage.getItem('crmLoggedIn');
+        if (sessionToken) {
+            this.isLoggedIn = true;
+            this.showApp();
+        } else {
+            this.showLoginScreen();
+        }
+    }
+
+    setupLoginForm() {
+        const form = document.getElementById('login-form');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.handleLogin();
+        });
+    }
+
+    handleLogin() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+
+        if (username === 'crm' && password === 'demo') {
+            sessionStorage.setItem('crmLoggedIn', 'true');
+            this.isLoggedIn = true;
+            this.showApp();
+            document.getElementById('login-form').reset();
+        } else {
+            alert('نام کاربری یا رمز عبور اشتباه است');
+        }
+    }
+
+    showLoginScreen() {
+        document.getElementById('login-screen').classList.add('active');
+        document.getElementById('app-container').style.display = 'none';
+        document.getElementById('info-screen').style.display = 'none';
+    }
+
+    showApp() {
+        document.getElementById('login-screen').classList.remove('active');
+        document.getElementById('app-container').style.display = 'grid';
+        document.getElementById('info-screen').classList.remove('active');
+        this.setupAppEventListeners();
         this.updateDashboard();
         this.renderCustomers();
         this.renderContacts();
@@ -14,16 +62,50 @@ class CRMApp {
         this.loadCustomersDropdown();
     }
 
-    setupEventListeners() {
-        // ناوبری
+    showInfoScreen() {
+        document.getElementById('info-screen').classList.add('active');
+        document.getElementById('app-container').style.display = 'none';
+    }
+
+    hideInfoScreen() {
+        document.getElementById('info-screen').classList.remove('active');
+        document.getElementById('app-container').style.display = 'grid';
+    }
+
+    logout() {
+        if (confirm('آیا می‌خواهید خروج کنید؟')) {
+            sessionStorage.removeItem('crmLoggedIn');
+            this.isLoggedIn = false;
+            this.showLoginScreen();
+        }
+    }
+
+    setupAppEventListeners() {
         document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const pageName = btn.dataset.page;
-                this.switchPage(pageName);
-            });
+            if (btn.dataset.page) {
+                btn.removeEventListener('click', this.navClickHandler);
+                btn.addEventListener('click', (e) => {
+                    const pageName = btn.dataset.page;
+                    this.switchPage(pageName);
+                });
+            }
         });
 
-        // مشتریان
+        document.getElementById('info-btn')?.removeEventListener('click', this.infoClickHandler);
+        document.getElementById('info-btn')?.addEventListener('click', () => this.showInfoScreen());
+
+        document.getElementById('logout-btn')?.removeEventListener('click', this.logoutClickHandler);
+        document.getElementById('logout-btn')?.addEventListener('click', () => this.logout());
+
+        document.getElementById('sidebar-info-btn')?.removeEventListener('click', this.sidebarInfoClickHandler);
+        document.getElementById('sidebar-info-btn')?.addEventListener('click', () => this.showInfoScreen());
+
+        document.getElementById('sidebar-logout-btn')?.removeEventListener('click', this.sidebarLogoutClickHandler);
+        document.getElementById('sidebar-logout-btn')?.addEventListener('click', () => this.logout());
+
+        document.getElementById('close-info-btn')?.removeEventListener('click', this.closeInfoClickHandler);
+        document.getElementById('close-info-btn')?.addEventListener('click', () => this.hideInfoScreen());
+
         document.getElementById('add-customer-btn').addEventListener('click', () => {
             this.openCustomerModal();
         });
@@ -37,7 +119,6 @@ class CRMApp {
             this.closeModal('customer-modal');
         });
 
-        // تماس‌ها
         document.getElementById('add-contact-btn').addEventListener('click', () => {
             this.openContactModal();
         });
@@ -51,7 +132,6 @@ class CRMApp {
             this.closeModal('contact-modal');
         });
 
-        // فرصت‌ها
         document.getElementById('add-opportunity-btn').addEventListener('click', () => {
             this.openOpportunityModal();
         });
@@ -65,7 +145,6 @@ class CRMApp {
             this.closeModal('opportunity-modal');
         });
 
-        // بستن مودال‌ها
         document.querySelectorAll('.close-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const modal = e.target.closest('.modal');
@@ -86,7 +165,7 @@ class CRMApp {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(pageName).classList.add('active');
 
-        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.nav-btn[data-page]').forEach(btn => btn.classList.remove('active'));
         document.querySelector(`[data-page="${pageName}"]`).classList.add('active');
 
         const titles = {
@@ -106,7 +185,6 @@ class CRMApp {
         document.getElementById('stat-revenue').textContent = this.formatCurrency(stats.totalRevenue);
     }
 
-    // مشتریان
     renderCustomers() {
         const customers = db.getCustomers();
         const tbody = document.getElementById('customers-table');
@@ -199,7 +277,6 @@ class CRMApp {
         }
     }
 
-    // تماس‌ها
     renderContacts() {
         const contacts = db.getContacts();
         const tbody = document.getElementById('contacts-table');
@@ -214,10 +291,12 @@ class CRMApp {
         noData.style.display = 'none';
         tbody.innerHTML = contacts.map(contact => {
             const customer = db.getCustomerById(contact.customerId);
+            const jalaliDate = jalali.gregorianToJalali(new Date(contact.date));
+            const formattedDate = jalali.formatJalaliDate(jalaliDate, 'YYYY/MM/DD');
             return `
                 <tr>
                     <td>${customer ? customer.name : '-'}</td>
-                    <td>${new Date(contact.date).toLocaleDateString('fa-IR')}</td>
+                    <td>${formattedDate}</td>
                     <td>${contact.type}</td>
                     <td>${contact.description || '-'}</td>
                     <td>
@@ -292,7 +371,6 @@ class CRMApp {
         }
     }
 
-    // فرصت‌های فروش
     renderOpportunities() {
         const opportunities = db.getOpportunities();
         const tbody = document.getElementById('opportunities-table');
