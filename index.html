@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سیستم مدیریت ارتباط با مشتری</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- سایدبار -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>CRM</h1>
+            </div>
+            <nav class="nav">
+                <button class="nav-btn active" data-page="dashboard">
+                    <span class="icon">📊</span>
+                    <span>داشبورد</span>
+                </button>
+                <button class="nav-btn" data-page="customers">
+                    <span class="icon">👥</span>
+                    <span>مشتریان</span>
+                </button>
+                <button class="nav-btn" data-page="contacts">
+                    <span class="icon">📞</span>
+                    <span>تماس‌ها</span>
+                </button>
+                <button class="nav-btn" data-page="opportunities">
+                    <span class="icon">💼</span>
+                    <span>فرصت‌های فروش</span>
+                </button>
+            </nav>
+        </aside>
+
+        <!-- محتوای اصلی -->
+        <main class="main-content">
+            <!-- هدر -->
+            <header class="header">
+                <div class="header-left">
+                    <h2 id="page-title">داشبورد</h2>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" placeholder="جستجو...">
+                        <button>🔍</button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- صفحات -->
+            <div class="pages">
+                <!-- داشبورد -->
+                <div id="dashboard" class="page active">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-customers">0</div>
+                            <div class="stat-label">کل مشتریان</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-contacts">0</div>
+                            <div class="stat-label">کل تماس‌ها</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-opportunities">0</div>
+                            <div class="stat-label">فرصت‌های فروش</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-revenue">0</div>
+                            <div class="stat-label">درآمد مورد انتظار</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- مشتریان -->
+                <div id="customers" class="page">
+                    <div class="page-header">
+                        <h3>مدیریت مشتریان</h3>
+                        <button class="btn btn-primary" id="add-customer-btn">+ افزودن مشتری</button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>نام</th>
+                                    <th>شماره تماس</th>
+                                    <th>ایمیل</th>
+                                    <th>شرکت</th>
+                                    <th>عملیات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customers-table"></tbody>
+                        </table>
+                    </div>
+                    <div id="no-customers" class="empty-state">
+                        <p>هیچ مشتری ثبت نشده است</p>
+                    </div>
+                </div>
+
+                <!-- تماس‌ها -->
+                <div id="contacts" class="page">
+                    <div class="page-header">
+                        <h3>سوابق تماس</h3>
+                        <button class="btn btn-primary" id="add-contact-btn">+ افزودن تماس</button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>نام مشتری</th>
+                                    <th>تاریخ</th>
+                                    <th>نوع تماس</th>
+                                    <th>توضیحات</th>
+                                    <th>عملیات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contacts-table"></tbody>
+                        </table>
+                    </div>
+                    <div id="no-contacts" class="empty-state">
+                        <p>هیچ تماسی ثبت نشده است</p>
+                    </div>
+                </div>
+
+                <!-- فرصت‌های فروش -->
+                <div id="opportunities" class="page">
+                    <div class="page-header">
+                        <h3>فرصت‌های فروش</h3>
+                        <button class="btn btn-primary" id="add-opportunity-btn">+ افزودن فرصه</button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>نام فرصه</th>
+                                    <th>مشتری</th>
+                                    <th>مقدار</th>
+                                    <th>احتمال</th>
+                                    <th>مرحله</th>
+                                    <th>عملیات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="opportunities-table"></tbody>
+                        </table>
+                    </div>
+                    <div id="no-opportunities" class="empty-state">
+                        <p>هیچ فرصه‌ای ثبت نشده است</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- مودال اضافه/ویرایش مشتری -->
+    <div id="customer-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="customer-modal-title">افزودن مشتری جدید</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <form id="customer-form">
+                <div class="form-group">
+                    <label>نام *</label>
+                    <input type="text" id="customer-name" required>
+                </div>
+                <div class="form-group">
+                    <label>شماره تماس *</label>
+                    <input type="tel" id="customer-phone" required>
+                </div>
+                <div class="form-group">
+                    <label>ایمیل</label>
+                    <input type="email" id="customer-email">
+                </div>
+                <div class="form-group">
+                    <label>شرکت</label>
+                    <input type="text" id="customer-company">
+                </div>
+                <div class="form-group">
+                    <label>آدرس</label>
+                    <textarea id="customer-address"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">ذخیره</button>
+                    <button type="button" class="btn btn-secondary" id="cancel-customer-btn">انصراف</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- مودال اضافه/ویرایش تماس -->
+    <div id="contact-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="contact-modal-title">افزودن تماس جدید</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <form id="contact-form">
+                <div class="form-group">
+                    <label>انتخاب مشتری *</label>
+                    <select id="contact-customer" required>
+                        <option value="">انتخاب کنید...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>نوع تماس *</label>
+                    <select id="contact-type" required>
+                        <option value="">انتخاب کنید...</option>
+                        <option value="تلفن">تلفن</option>
+                        <option value="ایمیل">ایمیل</option>
+                        <option value="دیدار">دیدار</option>
+                        <option value="پیامک">پیامک</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>تاریخ *</label>
+                    <input type="date" id="contact-date" required>
+                </div>
+                <div class="form-group">
+                    <label>توضیحات</label>
+                    <textarea id="contact-description"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">ذخیره</button>
+                    <button type="button" class="btn btn-secondary" id="cancel-contact-btn">انصراف</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- مودال اضافه/ویرایش فرصه -->
+    <div id="opportunity-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="opportunity-modal-title">افزودن فرصه جدید</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <form id="opportunity-form">
+                <div class="form-group">
+                    <label>نام فرصه *</label>
+                    <input type="text" id="opportunity-name" required>
+                </div>
+                <div class="form-group">
+                    <label>مشتری *</label>
+                    <select id="opportunity-customer" required>
+                        <option value="">انتخاب کنید...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>مقدار (تومان) *</label>
+                    <input type="number" id="opportunity-value" required min="0">
+                </div>
+                <div class="form-group">
+                    <label>احتمال فروش (%)</label>
+                    <input type="number" id="opportunity-probability" min="0" max="100" value="50">
+                </div>
+                <div class="form-group">
+                    <label>مرحله *</label>
+                    <select id="opportunity-stage" required>
+                        <option value="">انتخاب کنید...</option>
+                        <option value="پیش‌فروش">پیش‌فروش</option>
+                        <option value="مذاکره">مذاکره</option>
+                        <option value="پیشنهاد">پیشنهاد</option>
+                        <option value="تصمیم‌گیری">تصمیم‌گیری</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">ذخیره</button>
+                    <button type="button" class="btn btn-secondary" id="cancel-opportunity-btn">انصراف</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/db.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
