@@ -9,7 +9,6 @@ class CRMApp {
     init() {
         this.checkLogin();
         this.setupLoginForm();
-        this.setupAppEventListeners();
     }
 
     checkLogin() {
@@ -220,6 +219,7 @@ class CRMApp {
         const modal = document.getElementById('customer-modal');
         const form = document.getElementById('customer-form');
         const title = document.getElementById('customer-modal-title');
+        const dateInput = document.getElementById('customer-date');
 
         form.reset();
 
@@ -231,8 +231,19 @@ class CRMApp {
             document.getElementById('customer-email').value = customer.email || '';
             document.getElementById('customer-company').value = customer.company || '';
             document.getElementById('customer-address').value = customer.address || '';
+            dateInput.value = customer.date || '';
+            dateInput.dataset.gregorianDate = customer.gregorianDate || '';
         } else {
             title.textContent = 'افزودن مشتری جدید';
+            const today = jalali.getToday();
+            dateInput.value = jalali.formatJalaliDate(today, 'YYYY/MM/DD');
+            const gregorianDate = new Date().toISOString().split('T')[0];
+            dateInput.dataset.gregorianDate = gregorianDate;
+        }
+
+        if (!dateInput.dataset.hasDatePicker) {
+            jalali.createDatePicker(dateInput);
+            dateInput.dataset.hasDatePicker = 'true';
         }
 
         modal.classList.add('active');
@@ -248,13 +259,16 @@ class CRMApp {
         const email = document.getElementById('customer-email').value.trim();
         const company = document.getElementById('customer-company').value.trim();
         const address = document.getElementById('customer-address').value.trim();
+        const dateInput = document.getElementById('customer-date');
+        const date = dateInput.value;
+        const gregorianDate = dateInput.dataset.gregorianDate || '';
 
         if (!name || !phone) {
             alert('نام و شماره تماس الزامی است');
             return;
         }
 
-        const customerData = { name, phone, email, company, address };
+        const customerData = { name, phone, email, company, address, date, gregorianDate };
 
         if (this.currentEditingId) {
             db.updateCustomer(this.currentEditingId, customerData);

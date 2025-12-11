@@ -38,7 +38,7 @@ class JalaliCalendar {
 
         let jy, jm, jd;
 
-        const g_d_n = 365 * gy + Math.floor((gy + 3) / 4) - Math.floor((gy + 99) / 100) +
+        let g_d_n = 365 * gy + Math.floor((gy + 3) / 4) - Math.floor((gy + 99) / 100) +
             Math.floor((gy + 399) / 400);
 
         let j_d_n = 0;
@@ -97,7 +97,7 @@ class JalaliCalendar {
             days += (jm - 7) * 30;
         }
 
-        const gy = 400 * Math.floor(days / 146097);
+        let gy = 400 * Math.floor(days / 146097);
         days %= 146097;
 
         let flag = true;
@@ -133,7 +133,7 @@ class JalaliCalendar {
         let gd = days;
         let m = 0;
         for (let i = 0; i < gm.length; i++) {
-            v = gm[i];
+            let v = gm[i];
             if (gd <= v) break;
             gd -= v;
             m++;
