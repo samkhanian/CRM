@@ -15,6 +15,8 @@ class CRMApp {
         const sessionToken = sessionStorage.getItem('crmLoggedIn');
         if (sessionToken) {
             this.isLoggedIn = true;
+            db.resetDatabase();
+            db.initializeDemoData();
             this.showApp();
         } else {
             this.showLoginScreen();
@@ -36,6 +38,8 @@ class CRMApp {
         if (username === 'crm' && password === 'demo') {
             sessionStorage.setItem('crmLoggedIn', 'true');
             this.isLoggedIn = true;
+            db.resetDatabase();
+            db.initializeDemoData();
             this.showApp();
             document.getElementById('login-form').reset();
         } else {
@@ -74,6 +78,7 @@ class CRMApp {
     logout() {
         if (confirm('آیا می‌خواهید خروج کنید؟')) {
             sessionStorage.removeItem('crmLoggedIn');
+            db.resetDatabase();
             this.isLoggedIn = false;
             this.showLoginScreen();
         }
@@ -290,12 +295,10 @@ class CRMApp {
         noData.style.display = 'none';
         tbody.innerHTML = contacts.map(contact => {
             const customer = db.getCustomerById(contact.customerId);
-            const jalaliDate = jalali.gregorianToJalali(new Date(contact.date));
-            const formattedDate = jalali.formatJalaliDate(jalaliDate, 'YYYY/MM/DD', true);
             return `
                 <tr>
                     <td>${customer ? customer.name : '-'}</td>
-                    <td>${formattedDate}</td>
+                    <td>${contact.date}</td>
                     <td>${contact.type}</td>
                     <td>${contact.description || '-'}</td>
                     <td>
@@ -325,16 +328,10 @@ class CRMApp {
             const contact = db.getContactById(id);
             document.getElementById('contact-customer').value = contact.customerId;
             document.getElementById('contact-type').value = contact.type;
-            const jalaliDate = jalali.gregorianToJalali(new Date(contact.date));
-            dateInput.value = jalali.formatJalaliDate(jalaliDate, 'YYYY/MM/DD');
-            dateInput.dataset.gregorianDate = contact.date;
+            dateInput.value = contact.date;
             document.getElementById('contact-description').value = contact.description || '';
         } else {
             title.textContent = 'افزودن تماس جدید';
-            const today = jalali.getToday();
-            dateInput.value = jalali.formatJalaliDate(today, 'YYYY/MM/DD');
-            const gregorianDate = new Date().toISOString().split('T')[0];
-            dateInput.dataset.gregorianDate = gregorianDate;
         }
 
         modal.classList.add('active');
@@ -348,16 +345,21 @@ class CRMApp {
         const customerId = document.getElementById('contact-customer').value;
         const type = document.getElementById('contact-type').value;
         const dateInput = document.getElementById('contact-date');
-        const jalaliDateStr = dateInput.value.trim();
+        const dateStr = dateInput.value.trim();
         const description = document.getElementById('contact-description').value.trim();
 
-        if (!customerId || !type || !jalaliDateStr) {
+        if (!customerId || !type || !dateStr) {
             alert('مشتری، نوع تماس و تاریخ الزامی است');
             return;
         }
 
-        const gregorianDate = dateInput.dataset.gregorianDate;
-        const contactData = { customerId: parseInt(customerId), type, date: gregorianDate, description };
+        const parts = dateStr.split('/');
+        if (parts.length !== 3) {
+            alert('فرمت تاریخ باید به صورت YYYY/MM/DD باشد');
+            return;
+        }
+
+        const contactData = { customerId: parseInt(customerId), type, date: dateStr, description };
 
         if (this.currentEditingId) {
             db.updateContact(this.currentEditingId, contactData);

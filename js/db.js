@@ -5,12 +5,27 @@ class Database {
     }
 
     initializeDB() {
-        if (!localStorage.getItem(this.dbName)) {
+        const existing = localStorage.getItem(this.dbName);
+        if (!existing) {
             localStorage.setItem(this.dbName, JSON.stringify({
                 customers: [],
                 contacts: [],
                 opportunities: []
             }));
+        } else {
+            try {
+                const data = JSON.parse(existing);
+                if (!data.customers) data.customers = [];
+                if (!data.contacts) data.contacts = [];
+                if (!data.opportunities) data.opportunities = [];
+                localStorage.setItem(this.dbName, JSON.stringify(data));
+            } catch (e) {
+                localStorage.setItem(this.dbName, JSON.stringify({
+                    customers: [],
+                    contacts: [],
+                    opportunities: []
+                }));
+            }
         }
     }
 
@@ -139,6 +154,120 @@ class Database {
             opportunitiesCount: db.opportunities.length,
             totalRevenue: Math.round(totalRevenue)
         };
+    }
+
+    resetDatabase() {
+        localStorage.removeItem(this.dbName);
+        this.initializeDB();
+    }
+
+    initializeDemoData() {
+        const db = this.getDB();
+        
+        if (db.customers && db.customers.length > 0) {
+            return;
+        }
+
+        const customers = [
+            {
+                id: 1000,
+                name: 'شرکت تجارت ایرانیان',
+                phone: '02188776655',
+                email: 'info@tajarot.ir',
+                company: 'تجارت ایرانیان',
+                address: 'تهران، خیابان امام خمینی',
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 1001,
+                name: 'احمد رضایی',
+                phone: '09123456789',
+                email: 'ahmad@example.com',
+                company: 'شرکت فنی و مهندسی',
+                address: 'تهران، خیابان ولیعصر',
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 1002,
+                name: 'فاطمه محمدی',
+                phone: '09198765432',
+                email: 'fateme@company.ir',
+                company: 'گروه بازرگانی سینا',
+                address: 'اصفهان، خیابان چهار باغ',
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 1003,
+                name: 'علی کاظمی',
+                phone: '09134567890',
+                email: 'ali.kazemi@business.ir',
+                company: 'شرکت سرمایه‌گذاری تجارت',
+                address: 'قم، خیابان انقلاب',
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 1004,
+                name: 'مریم عباسی',
+                phone: '09165432109',
+                email: 'maryam.abbasi@corp.ir',
+                company: 'شرکت خدمات رایانه‌ای',
+                address: 'شیراز، خیابان زند',
+                createdAt: new Date().toISOString()
+            }
+        ];
+
+        const contacts = [
+            {
+                id: 2000,
+                customerId: 1000,
+                type: 'تلفن',
+                date: '1403/10/03',
+                description: 'بحث درخصوص قرارداد سالانه',
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 2001,
+                customerId: 1001,
+                type: 'ایمیل',
+                date: '1403/10/04',
+                description: 'ارسال پیشنهاد فروش',
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 2002,
+                customerId: 1002,
+                type: 'دیدار',
+                date: '1403/10/02',
+                description: 'جلسه معارفه در دفتر شرکت',
+                createdAt: new Date().toISOString()
+            }
+        ];
+
+        const opportunities = [
+            {
+                id: 3000,
+                name: 'پروژه سیستم مدیریت',
+                customerId: 1000,
+                value: 50000000,
+                probability: 75,
+                stage: 'مذاکره',
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 3001,
+                name: 'توسعه نرم‌افزار فروش',
+                customerId: 1003,
+                value: 75000000,
+                probability: 50,
+                stage: 'پیشنهاد',
+                createdAt: new Date().toISOString()
+            }
+        ];
+
+        db.customers = customers;
+        db.contacts = contacts;
+        db.opportunities = opportunities;
+        this.saveDB(db);
     }
 }
 
