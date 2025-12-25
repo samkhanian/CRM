@@ -7,7 +7,165 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div class="container">
+    <!-- صفحه لاگین -->
+    <div id="login-screen" class="login-screen active">
+        <div class="login-container">
+            <div class="login-box">
+                <div class="login-header">
+                    <div class="login-logo">🎯</div>
+                    <h1>سیستم CRM</h1>
+                    <p>مدیریت ارتباط با مشتری</p>
+                </div>
+                <form id="login-form" class="login-form">
+                    <div class="form-group">
+                        <label>نام کاربری</label>
+                        <input type="text" id="username" placeholder="crm را وارد کنید" required>
+                    </div>
+                    <div class="form-group">
+                        <label>رمز عبور</label>
+                        <input type="password" id="password" placeholder="demo را وارد کنید" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-login">ورود</button>
+                    <div class="login-hint">
+                        <p>اطلاعات نمایشی:</p>
+                        <p>نام کاربری: <strong>crm</strong></p>
+                        <p>رمز عبور: <strong>demo</strong></p>
+                    </div>
+                </form>
+            </div>
+            <div class="login-footer">
+                <p>© 2025 سیستم مدیریت ارتباط با مشتری</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- صفحه اطلاعات -->
+    <div id="info-screen" class="info-screen">
+        <div class="info-container">
+            <header class="info-header">
+                <div class="info-header-content">
+                    <h1>📚 راهنمای سیستم CRM</h1>
+                    <button id="close-info-btn" class="btn btn-secondary">بازگشت</button>
+                </div>
+            </header>
+            
+            <div class="info-content">
+                <section class="info-section">
+                    <h2>📖 CRM چیست؟</h2>
+                    <p>سیستم مدیریت ارتباط با مشتری (CRM) ابزاری است که کسب‌وکارها از آن برای مدیریت تمام تعاملات و روابط خود با مشتریان استفاده می‌کنند. این سیستم کمک می‌کند تا:</p>
+                    <ul>
+                        <li>✅ روابط مشتری را تقویت کنید</li>
+                        <li>✅ فروش را افزایش دهید</li>
+                        <li>✅ خدمات را بهبود بخشید</li>
+                        <li>✅ داده‌ها را سازمان‌دهی کنید</li>
+                    </ul>
+                </section>
+
+                <section class="info-section">
+                    <h2>🎯 اهداف اصلی CRM</h2>
+                    <div class="features-grid">
+                        <div class="feature-box">
+                            <div class="feature-icon">📊</div>
+                            <h3>تحلیل و گزارش‌دهی</h3>
+                            <p>نظارت بر عملکرد فروش و تحلیل رفتار مشتری</p>
+                        </div>
+                        <div class="feature-box">
+                            <div class="feature-icon">👥</div>
+                            <h3>مدیریت مشتریان</h3>
+                            <p>ذخیره و سازمان‌دهی اطلاعات مشتری</p>
+                        </div>
+                        <div class="feature-box">
+                            <div class="feature-icon">📞</div>
+                            <h3>مدیریت تماس‌ها</h3>
+                            <p>ثبت تمام تماس‌ها و تعاملات</p>
+                        </div>
+                        <div class="feature-box">
+                            <div class="feature-icon">💼</div>
+                            <h3>فرصت‌های فروش</h3>
+                            <p>پیگیری فرآیند فروش از شروع تا پایان</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="info-section">
+                    <h2>✨ ویژگی‌های این سیستم</h2>
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <span class="feature-number">1</span>
+                            <div class="feature-text">
+                                <h4>📊 داشبورد</h4>
+                                <p>نمایش آمار کلی شامل تعداد مشتریان، تماس‌ها و درآمد مورد انتظار</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-number">2</span>
+                            <div class="feature-text">
+                                <h4>👥 مدیریت مشتریان</h4>
+                                <p>اضافه، ویرایش و حذف اطلاعات مشتریان</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-number">3</span>
+                            <div class="feature-text">
+                                <h4>📞 سوابق تماس</h4>
+                                <p>ثبت انواع تماس‌های صورت‌گرفته با مشتریان</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-number">4</span>
+                            <div class="feature-text">
+                                <h4>💼 فرصت‌های فروش</h4>
+                                <p>مدیریت مراحل فروش و پیگیری احتمال فروش</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-number">5</span>
+                            <div class="feature-text">
+                                <h4>📅 تقویم فارسی</h4>
+                                <p>استفاده از تقویم فارسی برای تاریخ‌های ایرانی</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-number">6</span>
+                            <div class="feature-text">
+                                <h4>💾 ذخیره‌سازی محلی</h4>
+                                <p>ذخیره تمام داده‌ها در مرورگر بدون نیاز به سرور</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="info-section">
+                    <h2>🎨 طراحی و عناصر بصری</h2>
+                    <div class="design-info">
+                        <h3>رابط کاربری مدرن</h3>
+                        <ul>
+                            <li><strong>طراحی RTL:</strong> طراحی بهینه برای زبان فارسی و راست به چپ</li>
+                            <li><strong>رنگ‌های شیک:</strong> پالت رنگی حرفه‌ای و جذاب</li>
+                            <li><strong>انیمیشن‌ها:</strong> انتقال‌های صاف و جذاب بین صفحات</li>
+                            <li><strong>ریسپانسیو:</strong> سازگار با تمام اندازه‌های صفحه</li>
+                            <li><strong>آیکون‌ها:</strong> استفاده از emoji‌های شناخته‌شده برای بهتری</li>
+                            <li><strong>جداول:</strong> نمایش داده‌های سازمان‌یافته و خوانا</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section class="info-section">
+                    <h2>🚀 نحوه استفاده</h2>
+                    <ol class="usage-steps">
+                        <li><strong>ورود:</strong> از اطلاعات نمایشی (crm/demo) استفاده کنید</li>
+                        <li><strong>بررسی داشبورد:</strong> آمار کلی سیستم را مشاهده کنید</li>
+                        <li><strong>اضافه کردن مشتریان:</strong> مشتریان جدید را ثبت کنید</li>
+                        <li><strong>ثبت تماس‌ها:</strong> تمام تعاملات را ثبت نمایید</li>
+                        <li><strong>مدیریت فرصه‌ها:</strong> فرآیند فروش را پیگیری کنید</li>
+                        <li><strong>بررسی آمار:</strong> عملکرد خود را تحلیل کنید</li>
+                    </ol>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="app-container">
         <!-- سایدبار -->
         <aside class="sidebar">
             <div class="logo">
@@ -31,6 +189,16 @@
                     <span>فرصت‌های فروش</span>
                 </button>
             </nav>
+            <div class="sidebar-footer">
+                <button id="sidebar-info-btn" class="nav-btn nav-footer">
+                    <span class="icon">❓</span>
+                    <span>راهنما</span>
+                </button>
+                <button id="sidebar-logout-btn" class="nav-btn nav-footer">
+                    <span class="icon">🚪</span>
+                    <span>خروج</span>
+                </button>
+            </div>
         </aside>
 
         <!-- محتوای اصلی -->
@@ -45,6 +213,8 @@
                         <input type="text" placeholder="جستجو...">
                         <button>🔍</button>
                     </div>
+                    <button id="info-btn" class="btn btn-secondary" title="راهنما">❓</button>
+                    <button id="logout-btn" class="btn btn-secondary" title="خروج">🚪</button>
                 </div>
             </header>
 
@@ -182,6 +352,10 @@
                     <label>آدرس</label>
                     <textarea id="customer-address"></textarea>
                 </div>
+                <div class="form-group" style="position: relative;">
+                    <label>تاریخ ثبت‌نام</label>
+                    <input type="text" id="customer-date" placeholder="روز/ماه/سال" style="position: relative; z-index: 1;">
+                </div>
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">ذخیره</button>
                     <button type="button" class="btn btn-secondary" id="cancel-customer-btn">انصراف</button>
@@ -214,9 +388,9 @@
                         <option value="پیامک">پیامک</option>
                     </select>
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="position: relative;">
                     <label>تاریخ *</label>
-                    <input type="date" id="contact-date" required>
+                    <input type="text" id="contact-date" placeholder="روز/ماه/سال" required style="position: relative; z-index: 1;">
                 </div>
                 <div class="form-group">
                     <label>توضیحات</label>
@@ -274,6 +448,7 @@
         </div>
     </div>
 
+    <script src="js/jalali.js"></script>
     <script src="js/db.js"></script>
     <script src="js/app.js"></script>
 </body>

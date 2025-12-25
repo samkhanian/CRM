@@ -241,7 +241,10 @@ class CRMApp {
             dateInput.dataset.gregorianDate = gregorianDate;
         }
 
-        jalali.createDatePicker(dateInput);
+        if (!dateInput.dataset.hasDatePicker) {
+            jalali.createDatePicker(dateInput);
+            dateInput.dataset.hasDatePicker = 'true';
+        }
 
         modal.classList.add('active');
     }
@@ -349,7 +352,10 @@ class CRMApp {
             dateInput.dataset.gregorianDate = gregorianDate;
         }
 
-        jalali.createDatePicker(dateInput);
+        if (!dateInput.dataset.hasDatePicker) {
+            jalali.createDatePicker(dateInput);
+            dateInput.dataset.hasDatePicker = 'true';
+        }
 
         modal.classList.add('active');
     }

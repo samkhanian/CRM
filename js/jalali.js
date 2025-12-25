@@ -10,11 +10,12 @@ class JalaliCalendar {
         ];
 
         this.farsiNumbers = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+        this.currentPickerDate = new Date();
     }
 
     toFarsiNumber(num) {
         if (!num) return '';
-        return String(num).split('').map(d => this.farsiNumbers[d] || d).join('');
+        return String(num).split('').map(d => this.farsiNumbers[d]).join('');
     }
 
     toEnglishNumber(str) {
@@ -35,7 +36,10 @@ class JalaliCalendar {
         const gm = gDate.getMonth() + 1;
         const gd = gDate.getDate();
 
-        const g_d_n = 365 * gy + Math.floor((gy + 3) / 4) - Math.floor((gy + 99) / 100) + Math.floor((gy + 399) / 400);
+        let jy, jm, jd;
+
+        let g_d_n = 365 * gy + Math.floor((gy + 3) / 4) - Math.floor((gy + 99) / 100) +
+            Math.floor((gy + 399) / 400);
 
         let j_d_n = 0;
         for (let i = 0; i < gm; i++) {
@@ -57,7 +61,7 @@ class JalaliCalendar {
         }
         j_d_n += gd;
 
-        let jy = -1595 + 33 * Math.floor(g_d_n / 12053);
+        jy = -1595 + 33 * Math.floor(g_d_n / 12053);
         g_d_n %= 12053;
 
         jy += 4 * Math.floor(g_d_n / 1461);
@@ -68,11 +72,10 @@ class JalaliCalendar {
             g_d_n = (g_d_n - 1) % 365;
         }
 
-        let jd = g_d_n + 1;
+        jd = g_d_n + 1;
 
         if (jy <= 99) jy += 100;
 
-        let jm = 0;
         for (let i = 0; i < 12; i++) {
             let v = i < 6 ? 31 : i < 11 ? 30 : this.isLeapJalali(jy) ? 30 : 29;
             if (jd <= v) break;
@@ -163,44 +166,37 @@ class JalaliCalendar {
         return this.formatJalaliDate(this.getToday(), format);
     }
 
-    createDatePicker(inputElement, onDateSelect, minDate = null) {
-        const existingPicker = inputElement.parentElement.querySelector('.jalali-date-picker');
-        if (existingPicker) {
-            existingPicker.remove();
-        }
-
-        const self = this;
+    createDatePicker(inputElement, onDateSelect) {
         const pickerId = 'jalali-picker-' + Math.random().toString(36).substr(2, 9);
         const pickerContainer = document.createElement('div');
         pickerContainer.id = pickerId;
         pickerContainer.className = 'jalali-date-picker';
         pickerContainer.style.display = 'none';
 
-        let currentDate;
-        if (inputElement.dataset.gregorianDate && inputElement.dataset.gregorianDate.trim() && inputElement.dataset.gregorianDate !== 'undefined') {
-            currentDate = new Date(inputElement.dataset.gregorianDate);
-        } else {
-            currentDate = new Date();
-        }
-        
+        const getInitialDate = () => {
+            if (inputElement.dataset.gregorianDate) {
+                return new Date(inputElement.dataset.gregorianDate);
+            }
+            return new Date();
+        };
+
+        const currentDate = getInitialDate();
         const jalaliDate = this.gregorianToJalali(currentDate);
-        const todayDate = minDate || new Date();
         
         this.renderPickerUI(pickerContainer, jalaliDate, (selectedDate) => {
-            const gregorianDate = self.jalaliToGregorian(selectedDate.year, selectedDate.month, selectedDate.day);
+            const gregorianDate = this.jalaliToGregorian(selectedDate.year, selectedDate.month, selectedDate.day);
             const dateString = gregorianDate.toISOString().split('T')[0];
             inputElement.dataset.gregorianDate = dateString;
-            const jalaliFormatted = self.gregorianToJalali(gregorianDate);
-            inputElement.value = self.formatJalaliDate(jalaliFormatted, 'YYYY/MM/DD');
+            const jalaliFormatted = this.gregorianToJalali(gregorianDate);
+            inputElement.value = this.formatJalaliDate(jalaliFormatted, 'YYYY/MM/DD');
             pickerContainer.style.display = 'none';
             if (onDateSelect) onDateSelect(dateString);
-        }, todayDate);
+        });
 
         inputElement.parentElement.style.position = 'relative';
         inputElement.parentElement.appendChild(pickerContainer);
 
-        inputElement.addEventListener('focus', (e) => {
-            e.preventDefault();
+        inputElement.addEventListener('focus', () => {
             pickerContainer.style.display = 'block';
         });
 
@@ -211,11 +207,8 @@ class JalaliCalendar {
         });
     }
 
-    renderPickerUI(container, jalaliDate, onSelect, minDate = null) {
+    renderPickerUI(container, jalaliDate, onSelect) {
         const self = this;
-        const todayGregorian = minDate || new Date();
-        const today = this.gregorianToJalali(todayGregorian);
-        
         const html = `
             <div class="picker-header">
                 <button class="picker-nav-btn" data-action="prev-month">◀</button>
@@ -230,15 +223,7 @@ class JalaliCalendar {
             </div>
             <div class="picker-days" data-year="${jalaliDate.year}" data-month="${jalaliDate.month}">
                 ${this.generateDays(jalaliDate.year, jalaliDate.month).map((day, i) => {
-                    if (!day) return '<div class="picker-day empty"></div>';
-                    
-                    const isDisabled = jalaliDate.year < today.year || 
-                                     (jalaliDate.year === today.year && jalaliDate.month < today.month) ||
-                                     (jalaliDate.year === today.year && jalaliDate.month === today.month && day < today.day);
-                    
-                    return isDisabled ? 
-                        `<button class="picker-day disabled" disabled data-day="${day}">${this.toFarsiNumber(day)}</button>` :
-                        `<button class="picker-day" data-day="${day}">${this.toFarsiNumber(day)}</button>`;
+                    return day ? `<button class="picker-day" data-day="${day}">${this.toFarsiNumber(day)}</button>` : '<div class="picker-day empty"></div>';
                 }).join('')}
             </div>
         `;
@@ -261,14 +246,13 @@ class JalaliCalendar {
                     if (month > 12) { month = 1; year++; }
                 }
                 
-                self.renderPickerUI(container, { year, month, day: 1 }, onSelect, minDate);
+                self.renderPickerUI(container, { year, month, day: 1 }, onSelect);
             });
         });
 
-        container.querySelectorAll('[data-day]:not(.disabled)').forEach(btn => {
+        container.querySelectorAll('[data-day]').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
-                e.stopPropagation();
                 const day = parseInt(btn.dataset.day);
                 const daysDiv = container.querySelector('.picker-days');
                 const year = parseInt(daysDiv.dataset.year);
