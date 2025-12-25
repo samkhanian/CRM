@@ -219,7 +219,6 @@ class CRMApp {
         const modal = document.getElementById('customer-modal');
         const form = document.getElementById('customer-form');
         const title = document.getElementById('customer-modal-title');
-        const dateInput = document.getElementById('customer-date');
 
         form.reset();
 
@@ -231,19 +230,8 @@ class CRMApp {
             document.getElementById('customer-email').value = customer.email || '';
             document.getElementById('customer-company').value = customer.company || '';
             document.getElementById('customer-address').value = customer.address || '';
-            dateInput.value = customer.date || '';
-            dateInput.dataset.gregorianDate = customer.gregorianDate || '';
         } else {
             title.textContent = 'افزودن مشتری جدید';
-            const today = jalali.getToday();
-            dateInput.value = jalali.formatJalaliDate(today, 'YYYY/MM/DD');
-            const gregorianDate = new Date().toISOString().split('T')[0];
-            dateInput.dataset.gregorianDate = gregorianDate;
-        }
-
-        if (!dateInput.dataset.hasDatePicker) {
-            jalali.createDatePicker(dateInput);
-            dateInput.dataset.hasDatePicker = 'true';
         }
 
         modal.classList.add('active');
@@ -259,16 +247,13 @@ class CRMApp {
         const email = document.getElementById('customer-email').value.trim();
         const company = document.getElementById('customer-company').value.trim();
         const address = document.getElementById('customer-address').value.trim();
-        const dateInput = document.getElementById('customer-date');
-        const date = dateInput.value;
-        const gregorianDate = dateInput.dataset.gregorianDate || '';
 
         if (!name || !phone) {
             alert('نام و شماره تماس الزامی است');
             return;
         }
 
-        const customerData = { name, phone, email, company, address, date, gregorianDate };
+        const customerData = { name, phone, email, company, address };
 
         if (this.currentEditingId) {
             db.updateCustomer(this.currentEditingId, customerData);
@@ -306,7 +291,7 @@ class CRMApp {
         tbody.innerHTML = contacts.map(contact => {
             const customer = db.getCustomerById(contact.customerId);
             const jalaliDate = jalali.gregorianToJalali(new Date(contact.date));
-            const formattedDate = jalali.formatJalaliDate(jalaliDate, 'YYYY/MM/DD');
+            const formattedDate = jalali.formatJalaliDate(jalaliDate, 'YYYY/MM/DD', true);
             return `
                 <tr>
                     <td>${customer ? customer.name : '-'}</td>
@@ -352,11 +337,6 @@ class CRMApp {
             dateInput.dataset.gregorianDate = gregorianDate;
         }
 
-        if (!dateInput.dataset.hasDatePicker) {
-            jalali.createDatePicker(dateInput);
-            dateInput.dataset.hasDatePicker = 'true';
-        }
-
         modal.classList.add('active');
     }
 
@@ -368,15 +348,16 @@ class CRMApp {
         const customerId = document.getElementById('contact-customer').value;
         const type = document.getElementById('contact-type').value;
         const dateInput = document.getElementById('contact-date');
-        const date = dateInput.dataset.gregorianDate;
+        const jalaliDateStr = dateInput.value.trim();
         const description = document.getElementById('contact-description').value.trim();
 
-        if (!customerId || !type || !date) {
+        if (!customerId || !type || !jalaliDateStr) {
             alert('مشتری، نوع تماس و تاریخ الزامی است');
             return;
         }
 
-        const contactData = { customerId: parseInt(customerId), type, date, description };
+        const gregorianDate = dateInput.dataset.gregorianDate;
+        const contactData = { customerId: parseInt(customerId), type, date: gregorianDate, description };
 
         if (this.currentEditingId) {
             db.updateContact(this.currentEditingId, contactData);

@@ -146,11 +146,17 @@ class JalaliCalendar {
         return ((jy + 2346) * 683) % 2820 < 683;
     }
 
-    formatJalaliDate(jDate, format = 'YYYY/MM/DD') {
+    formatJalaliDate(jDate, format = 'YYYY/MM/DD', useFarsiNumbers = false) {
         if (!jDate) return '';
-        const y = this.toFarsiNumber(jDate.year);
-        const m = this.toFarsiNumber(String(jDate.month).padStart(2, '0'));
-        const d = this.toFarsiNumber(String(jDate.day).padStart(2, '0'));
+        let y = String(jDate.year);
+        let m = String(jDate.month).padStart(2, '0');
+        let d = String(jDate.day).padStart(2, '0');
+
+        if (useFarsiNumbers) {
+            y = this.toFarsiNumber(y);
+            m = this.toFarsiNumber(m);
+            d = this.toFarsiNumber(d);
+        }
 
         return format
             .replace('YYYY', y)
