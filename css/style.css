@@ -1012,3 +1012,15 @@ form {
     cursor: default;
     background: transparent;
 }
+
+.picker-day.disabled {
+    cursor: not-allowed;
+    color: #cbd5e1;
+    background: #f1f5f9;
+    opacity: 0.5;
+}
+
+.picker-day.disabled:hover {
+    background: #f1f5f9;
+    color: #cbd5e1;
+}
